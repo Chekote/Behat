@@ -149,7 +149,7 @@ final class JUnitScenarioPrinter
             $this->outlineStepCount = 1;
         }
 
-        $name = $currentOutline->getTitle() . ' #' . $this->outlineStepCount;
+        $name = $currentOutline->getTitle();
         return $name;
     }
 }
