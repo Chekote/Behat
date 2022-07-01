@@ -77,11 +77,22 @@ final class JUnitScenarioPrinter
         $outputPrinter = $formatter->getOutputPrinter();
 
         $outputPrinter->addTestcase(array(
-            'name' => $name,
+            'name' => $this->addLineNumberToScenarioName($name, $scenario->getLine()),
             'classname' => $feature->getTitle(),
             'status' => $this->resultConverter->convertResultToString($result),
             'time' => $this->durationListener ? $this->durationListener->getDuration($scenario) : ''
         ));
+    }
+
+    /**
+     * Append scenario line number in the feature file to a scenario name
+     *
+     * @param string $name
+     * @param integer $lineNumber
+     * @return string
+     */
+    private function addLineNumberToScenarioName(string $name, int $lineNumber) {
+        return $name . " Line #" . $lineNumber;
     }
 
     /**
