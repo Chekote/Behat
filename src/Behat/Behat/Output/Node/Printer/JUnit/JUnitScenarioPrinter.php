@@ -76,13 +76,13 @@ final class JUnitScenarioPrinter
         /** @var JUnitOutputPrinter $outputPrinter */
         $outputPrinter = $formatter->getOutputPrinter();
 
-        $outputPrinter->addTestcase(array(
+        $outputPrinter->addTestcase($this->addCircleCiAttributes(array(
             'name' => $this->addLineNumberToScenarioName($name, $scenario->getLine()),
             'file' => $this->addLineNumberToFeatureFile($this->convertToRelativePath($feature->getFile()), $scenario->getLine()),
             'classname' => $feature->getTitle(),
             'status' => $this->resultConverter->convertResultToString($result),
             'time' => $this->durationListener ? $this->durationListener->getDuration($scenario) : ''
-        ));
+        )));
     }
 
     /**
@@ -116,6 +116,23 @@ final class JUnitScenarioPrinter
      */
     private function convertToRelativePath(string $absolutePath) {
         return str_replace(getcwd() . '/', '', $absolutePath);
+    }
+
+    /**
+     * Adds attributes to testcase tag related to CircleCI if in a CircleCI environment
+     *
+     * @param array $attributes
+     * @return array
+     */
+    private function addCircleCiAttributes(array $attributes) {
+        $circleCiNode = getenv('CIRCLE_NODE_INDEX');
+        if($circleCiNode !== false) {
+            $circleCiNodeLabel =  "[Node #$circleCiNode] ";
+            $attributes['name'] = $circleCiNodeLabel . $attributes['name'];
+            $attributes['circlecinodeindex'] = $circleCiNode;
+        }
+
+        return $attributes;
     }
 
     /**
