@@ -48,7 +48,7 @@ jobs:
 
             -   name: Install symfony/flex
                 run: |
-                    composer config --no-plugins allow-plugins.symfony/flex true &&
+                    composer config --global --no-plugins allow-plugins.symfony/flex true &&
                     composer global require symfony/flex
 
             -   name: Uninstall container interop
