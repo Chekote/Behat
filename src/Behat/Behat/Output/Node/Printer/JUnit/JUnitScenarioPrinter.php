@@ -118,7 +118,6 @@ final class JUnitScenarioPrinter
         if($circleCiNode !== false) {
             $circleCiNodeLabel =  "[Node #$circleCiNode] ";
             $attributes['name'] = $circleCiNodeLabel . $attributes['name'];
-            $attributes['circlecinodeindex'] = $circleCiNode;
         }
 
         return $attributes;
