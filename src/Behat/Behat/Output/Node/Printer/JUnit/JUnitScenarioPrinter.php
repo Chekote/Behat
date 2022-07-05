@@ -95,7 +95,7 @@ final class JUnitScenarioPrinter
      * @return string
      */
     private function addLineNumberToFeatureFile(string $path, int $lineNumber) {
-        return $path . ":" . $lineNumber;
+        return "$path:$lineNumber";
     }
     /**
      * Converts the absolute feature file path to the relative path to the root of the project
