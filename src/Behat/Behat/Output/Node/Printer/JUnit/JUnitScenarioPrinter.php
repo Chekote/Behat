@@ -115,9 +115,8 @@ final class JUnitScenarioPrinter
      */
     private function addCircleCiAttributes(array $attributes) {
         $circleCiNode = getenv('CIRCLE_NODE_INDEX');
-        if($circleCiNode !== false) {
-            $circleCiNodeLabel =  "[Node #$circleCiNode] ";
-            $attributes['name'] = $circleCiNodeLabel . $attributes['name'];
+        if ($circleCiNode !== false) {
+            $attributes['name'] = "[Node #$circleCiNode] {$attributes['name']}";
         }
 
         return $attributes;
