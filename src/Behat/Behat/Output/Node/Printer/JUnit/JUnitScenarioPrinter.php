@@ -78,7 +78,7 @@ final class JUnitScenarioPrinter
 
         $outputPrinter->addTestcase($this->addCircleCiAttributes(array(
             'name' => $name,
-            'file' => $this->addLineNumberToFeatureFile($this->convertToRelativePath($feature->getFile()), $scenario->getLine()),
+            'file' => $this->appendLineNumberToPath($this->convertToRelativePath($feature->getFile()), $scenario->getLine()),
             'classname' => $feature->getTitle(),
             'status' => $this->resultConverter->convertResultToString($result),
             'time' => $this->durationListener ? $this->durationListener->getDuration($scenario) : ''
@@ -86,7 +86,7 @@ final class JUnitScenarioPrinter
     }
 
     /**
-     * Append scenario line number in the feature file to the feature file
+     * Append scenario line number to the path to a feature file
      *
      * This can be used to reference the scenario when running tests in the command line
      *
@@ -94,9 +94,10 @@ final class JUnitScenarioPrinter
      * @param integer $lineNumber
      * @return string
      */
-    private function addLineNumberToFeatureFile(string $path, int $lineNumber) {
+    private function appendLineNumberToPath(string $path, int $lineNumber) {
         return "$path:$lineNumber";
     }
+
     /**
      * Converts the absolute feature file path to the relative path to the root of the project
      *
