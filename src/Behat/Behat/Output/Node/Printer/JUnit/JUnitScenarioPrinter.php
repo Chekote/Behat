@@ -142,12 +142,7 @@ final class JUnitScenarioPrinter
             $this->outlineStepCount = 1;
         }
 
-        if ($this->circleCiNode !== false) {
-            $name = $currentOutline->getTitle(); // Do not add example number in CircleCI
-        } else {
-            $name = $currentOutline->getTitle() . ' #' . $this->outlineStepCount;
-        }
-
+        $name = $currentOutline->getTitle() . ' #' . $this->outlineStepCount;
         return $name;
     }
 }
