@@ -53,11 +53,17 @@ final class JUnitScenarioPrinter
      */
     private $durationListener;
 
+    /**
+     * @var string|bool
+     */
+    private $circleCiNode;
+
     public function __construct(ResultToStringConverter $resultConverter, JUnitOutlineStoreListener $outlineListener, JUnitDurationListener $durationListener = null)
     {
         $this->resultConverter = $resultConverter;
         $this->outlineStoreListener = $outlineListener;
         $this->durationListener = $durationListener;
+        $this->circleCiNode = getenv('CIRCLE_NODE_INDEX');
     }
 
     /**
@@ -114,9 +120,8 @@ final class JUnitScenarioPrinter
      * @return array
      */
     private function addCircleCiAttributes(array $attributes, FeatureNode $feature, ScenarioLikeInterface $scenario) {
-        $circleCiNode = getenv('CIRCLE_NODE_INDEX');
-        if ($circleCiNode !== false) {
-            $attributes['name'] = "[Node #$circleCiNode] {$attributes['name']}";
+        if ($this->circleCiNode !== false) {
+            $attributes['name'] = "[Node #$this->circleCiNode] {$attributes['name']}";
             $attributes['file'] = $this->appendLineNumberToPath($this->convertToRelativePath($feature->getFile()), $scenario->getLine());
         }
 
@@ -137,7 +142,12 @@ final class JUnitScenarioPrinter
             $this->outlineStepCount = 1;
         }
 
-        $name = $currentOutline->getTitle();
+        if ($this->circleCiNode !== false) {
+            $name = $currentOutline->getTitle(); // Do not add example number in CircleCI
+        } else {
+            $name = $currentOutline->getTitle() . ' #' . $this->outlineStepCount;
+        }
+
         return $name;
     }
 }
