@@ -79,7 +79,30 @@ final class InitializedContextEnvironment implements ContextEnvironment, Service
 
     public function hasContextClass($class)
     {
-        return isset($this->contexts[$class]);
+        return $class ? (bool) $this->resolveContextClass($class) : false;
+    }
+
+    /**
+     * Resolves the specified class to a registered context.
+     *
+     * Will return an instance of the specified class if it is registered directly,
+     * or any registered context that extends/implements the specified class/interface.
+     *
+     * @param  string       $class the fully qualified class name.
+     * @return Context|null The context class, or null if no matching context was found.
+     */
+    public function resolveContextClass($class) {
+        if (isset($this->contexts[$class])) {
+            return $this->contexts[$class];
+        }
+
+        foreach ($this->contexts as $context) {
+            if ($context instanceof $class) {
+                return $context;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -105,14 +128,14 @@ final class InitializedContextEnvironment implements ContextEnvironment, Service
      */
     public function getContext($class)
     {
-        if (!$this->hasContextClass($class)) {
+        if (!$context = $this->resolveContextClass($class)) {
             throw new ContextNotFoundException(sprintf(
                 '`%s` context is not found in the suite environment. Have you registered it?',
                 $class
             ), $class);
         }
 
-        return $this->contexts[$class];
+        return $context;
     }
 
     public function getServiceContainer()
