@@ -53,11 +53,17 @@ final class JUnitScenarioPrinter
      */
     private $durationListener;
 
+    /**
+     * @var string|bool
+     */
+    private $circleCiNode;
+
     public function __construct(ResultToStringConverter $resultConverter, JUnitOutlineStoreListener $outlineListener, JUnitDurationListener $durationListener = null)
     {
         $this->resultConverter = $resultConverter;
         $this->outlineStoreListener = $outlineListener;
         $this->durationListener = $durationListener;
+        $this->circleCiNode = getenv('CIRCLE_NODE_INDEX');
     }
 
     /**
@@ -76,12 +82,12 @@ final class JUnitScenarioPrinter
         /** @var JUnitOutputPrinter $outputPrinter */
         $outputPrinter = $formatter->getOutputPrinter();
 
-        $testCaseAttributes = array(
+        $testCaseAttributes = $this->addCircleCiAttributes(array(
             'name'      => $name,
             'classname' => $feature->getTitle(),
             'status'    => $this->resultConverter->convertResultToString($result),
             'time'      => $this->durationListener ? $this->durationListener->getDuration($scenario) : ''
-        );
+        ), $feature, $scenario);
 
         if ($file) {
             $cwd = realpath(getcwd());
@@ -91,6 +97,44 @@ final class JUnitScenarioPrinter
         }
 
         $outputPrinter->addTestcase($testCaseAttributes);
+    }
+
+    /**
+     * Append scenario line number to the path to a feature file
+     *
+     * This can be used to reference the scenario when running tests in the command line
+     *
+     * @param string $path
+     * @param integer $lineNumber
+     * @return string
+     */
+    private function appendLineNumberToPath(string $path, int $lineNumber) {
+        return "$path:$lineNumber";
+    }
+
+    /**
+     * Converts the absolute feature file path to the relative path to the root of the project
+     *
+     * @param string $absolutePath
+     * @return string
+     */
+    private function convertToRelativePath(string $absolutePath) {
+        return str_replace(getcwd() . '/', '', $absolutePath);
+    }
+
+    /**
+     * Adds attributes to testcase tag related to CircleCI if in a CircleCI environment
+     *
+     * @param array $attributes
+     * @return array
+     */
+    private function addCircleCiAttributes(array $attributes, FeatureNode $feature, ScenarioLikeInterface $scenario) {
+        if ($this->circleCiNode !== false) {
+            $attributes['name'] = "[Node #$this->circleCiNode] {$attributes['name']}";
+            $attributes['file'] = $this->appendLineNumberToPath($this->convertToRelativePath($feature->getFile()), $scenario->getLine());
+        }
+
+        return $attributes;
     }
 
     /**
