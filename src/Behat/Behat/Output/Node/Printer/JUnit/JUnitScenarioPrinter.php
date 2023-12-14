@@ -130,7 +130,7 @@ final class JUnitScenarioPrinter
      */
     private function addCircleCiAttributes(array $attributes, FeatureNode $feature, ScenarioLikeInterface $scenario) {
         if ($this->circleCiNode !== false) {
-            $attributes['classname'] = "[Node #$this->circleCiNode] {$feature->getTitle()}";
+            $attributes['name'] = "[Node #$this->circleCiNode] {$attributes['name']}";
             $attributes['file'] = $this->appendLineNumberToPath($this->convertToRelativePath($feature->getFile()), $scenario->getLine());
         }
 
